@@ -92,11 +92,12 @@ namespace marianateixeira.PlatformerController
             Deceleration = MaxSpeed / DecelerationTime;
         }
 
-        public void UpdateVariables(float maxSpeed, float accelerationTime, float decelerationTime, float jumpHeight, float jumpTime, float fallTime)
+        public void UpdateVariables(float maxSpeed, float accelerationTime, float decelerationTime, bool variableJump, float jumpHeight, float jumpTime, float fallTime)
         {
             this.maxSpeed = maxSpeed;
             this.accelerationTime = accelerationTime;
             this.decelerationTime = decelerationTime;
+            this.variableJump = variableJump;
             this.jumpHeight = jumpHeight;
             this.jumpTime = jumpTime;
             this.fallTime = fallTime;
@@ -112,8 +113,7 @@ namespace marianateixeira.PlatformerController
                 string json = File.ReadAllText(filePath);
                 SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-                UpdateVariables(data.MaxSpeed, data.AccelerationTime, data.DecelerationTime, data.JumpHeight, data.JumpTime, data.FallTime);
-                this.variableJump = data.VariableJump;
+                UpdateVariables(data.MaxSpeed, data.AccelerationTime, data.DecelerationTime, data.VariableJump, data.JumpHeight, data.JumpTime, data.FallTime);
             }
         }
 
@@ -121,10 +121,10 @@ namespace marianateixeira.PlatformerController
         {
             SaveData data = new SaveData()
             {
-                VariableJump = variableJump,
                 MaxSpeed = maxSpeed,
                 AccelerationTime = accelerationTime,
                 DecelerationTime = decelerationTime,
+                VariableJump = variableJump,
                 JumpHeight = jumpHeight,
                 JumpTime = jumpTime,
                 FallTime = fallTime,
@@ -137,10 +137,10 @@ namespace marianateixeira.PlatformerController
 
         private class SaveData
         {
-            public bool VariableJump;
             public float MaxSpeed;
             public float AccelerationTime;
             public float DecelerationTime;
+            public bool VariableJump;
             public float JumpHeight;
             public float JumpTime;
             public float FallTime;
