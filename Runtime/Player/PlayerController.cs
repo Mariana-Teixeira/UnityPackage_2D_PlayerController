@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace marianateixeira.PlayerController
+namespace marianateixeira.PlatformerController
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(BoxCollider2D))]
@@ -61,7 +61,7 @@ namespace marianateixeira.PlayerController
         {
             _playerInputMap = new PlayerControls();
             _playerInputMap.Enable();
-            
+
             _playerInputMap.Player.Jumping.started += context => JumpInput = true;
             _playerInputMap.Player.Jumping.canceled += context => JumpInput = false;
 

@@ -1,0 +1,16 @@
+{
+    "name": "Editor.PlatformerController",
+    "rootNamespace": "marianateixeira.PlatformerController",
+    "references": [
+        "GUID:a31f87c65a81c8547bb585b0725c705f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

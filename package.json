@@ -1,0 +1,16 @@
+{
+    "name": "com.marianateixeira.platformercontroller",
+    "version": "1.0.0",
+    "displayName": "2D Player Controller",
+    "description": "This is an example package",
+    "unity": "2021.3.34f",
+    "dependencies": {
+      "com.unity.inputsystem": "1.7.0"
+   },
+    "author": {
+      "name": "Mariana Teixeira",
+      "email": "teixeira.marianareis@gmail.com",
+      "url": "https://www.mariana-teixeira.com"
+    }
+  }
+  

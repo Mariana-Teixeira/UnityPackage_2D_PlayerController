@@ -1,26 +1,20 @@
 using System;
-using System.Data;
 using System.IO;
 using UnityEngine;
-using UnityEngine.InputSystem.Processors;
-using UnityEngine.InputSystem.XR;
 
-namespace marianateixeira.PlayerController
+namespace marianateixeira.PlatformerController
 {
     [Serializable]
     public struct PlayerData
     {
         #region Variables
-        [SerializeField]
-        float maxSpeed;
-        float accelerationTime;
-        float decelerationTime;
-        [SerializeField]
-        bool variableJump;
-        float jumpHeight;
-        [SerializeField]
-        float jumpTime;
-        float fallTime;
+        [SerializeField] float maxSpeed;
+        [SerializeField] float accelerationTime;
+        [SerializeField] float decelerationTime;
+        [SerializeField] bool variableJump;
+        [SerializeField] float jumpHeight;
+        [SerializeField] float jumpTime;
+        [SerializeField] float fallTime;
         #endregion
 
         #region Getters for Inspector Variables
