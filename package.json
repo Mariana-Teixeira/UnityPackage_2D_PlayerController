@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "displayName": "2D Player Controller",
     "description": "This is an example package",
-    "unity": "2021.3.34f",
+    "unity": "2021.3.34f1",
     "dependencies": {
       "com.unity.inputsystem": "1.7.0"
    },
