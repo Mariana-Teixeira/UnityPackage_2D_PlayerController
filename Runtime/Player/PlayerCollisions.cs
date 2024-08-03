@@ -1,17 +1,33 @@
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace marianateixeira.PlatformerController
 {
     public class PlayerCollisions
     {
-        PlayerController controller;
-        RaycastHit2D[] hits;
-
-        private Vector2 HitboxSize
+        PlayerController _controller;
+        public RaycastHit2D[] AllCollisions
         {
             get
             {
-                return new Vector2(controller.BoxCollider.size.x - 0.1f, controller.BoxCollider.size.y - 0.1f);
+                RaycastHit2D[] hits = Physics2D.BoxCastAll(
+                        _controller.Body.position,
+                        _controller.BoxCollider.size,
+                        0.0f,
+                        _controller.Move.normalized,
+                        _controller.Move.magnitude * Time.deltaTime,
+                        _controller.PlatformerMask);
+
+                return hits;
+            }
+        }
+
+        public bool IsItColliding
+        {
+            get
+            {
+                return AllCollisions.Length > 0;
             }
         }
 
@@ -19,15 +35,7 @@ namespace marianateixeira.PlatformerController
         {
             get
             {
-                RaycastHit2D hit = Physics2D.BoxCast(
-                controller.Body.position,
-                new Vector2(HitboxSize.x, 0.1f),
-                0.0f,
-                Vector2.down,
-                HitboxSize.y * 0.5f,
-                controller.PlatformerMask);
-
-                return hit.collider != null;
+                return IsSideColliding(Vector2.down);
             }
         }
 
@@ -35,15 +43,7 @@ namespace marianateixeira.PlatformerController
         {
             get
             {
-                RaycastHit2D hit = Physics2D.BoxCast(
-                controller.Body.position,
-                new Vector2(HitboxSize.x, 0.1f),
-                0.0f,
-                Vector2.up,
-                HitboxSize.y * 0.5f,
-                controller.PlatformerMask);
-
-                return hit.collider != null;
+                return IsSideColliding(Vector2.up);
             }
         }
 
@@ -51,15 +51,7 @@ namespace marianateixeira.PlatformerController
         {
             get
             {
-                RaycastHit2D hit = Physics2D.BoxCast(
-                controller.Body.position,
-                new Vector2(0.1f, HitboxSize.y),
-                0.0f,
-                Vector2.left,
-                HitboxSize.x * 0.5f,
-                controller.PlatformerMask);
-
-                return hit.collider != null;
+                return IsSideColliding(Vector2.left);
             }
         }
 
@@ -67,19 +59,11 @@ namespace marianateixeira.PlatformerController
         {
             get
             {
-                RaycastHit2D hit = Physics2D.BoxCast(
-                controller.Body.position,
-                new Vector2(0.1f, HitboxSize.y),
-                0.0f,
-                Vector2.right,
-                HitboxSize.x * 0.5f,
-                controller.PlatformerMask);
-
-                return hit.collider != null;
+                return IsSideColliding(Vector2.right);
             }
         }
 
-        public bool AreSidesColliding
+        public bool AreLeftOrRightColliding
         {
             get
             {
@@ -87,72 +71,95 @@ namespace marianateixeira.PlatformerController
             }
         }
 
+        public bool IsGrounded
+        {
+            get
+            {
+                var leftHit = Physics2D.Raycast(
+                    new Vector2(_controller.BoxCollider.bounds.min.x, _controller.BoxCollider.bounds.min.y),
+                    Vector2.down,
+                    0.05f,
+                    _controller.PlatformerMask);
+
+                var rightHit = Physics2D.Raycast(
+                    new Vector2(_controller.BoxCollider.bounds.max.x, _controller.BoxCollider.bounds.min.y),
+                    Vector2.down,
+                    0.05f,
+                    _controller.PlatformerMask);
+
+                if (leftHit.collider != null || rightHit.collider != null) return true;
+                else return false;
+            }
+        }
+
         public PlayerCollisions(PlayerController controller)
         {
-            this.controller = controller;
+            this._controller = controller;
         }
 
-        public void UpdateCollisions(ref Vector2 position)
+        public Vector2 UpdateCollisions(Vector2 position)
         {
-            if (!IsItColliding()) return;
-
-            foreach (var hit in hits)
+            if (IsItColliding == true)
             {
-                if (hit.normal == Vector2.up || hit.normal == Vector2.down)
-                    position = CompensateVerticalAxis(hit, position);
-                else if (hit.normal == Vector2.left || hit.normal == Vector2.right)
-                    position = CompensateHorizontalAxis(hit, position);
+                position = MovePositionToCompensateCollision(position);
             }
 
-        }
-
-        bool IsItColliding()
-        {
-            hits = Physics2D.BoxCastAll(
-                    controller.Body.position,
-                    HitboxSize,
-                    0.0f,
-                    controller.Move.normalized,
-                    controller.Move.magnitude * Time.fixedDeltaTime,
-                    controller.PlatformerMask);
-
-            if (hits.Length > 0) return true;
-            else return false;
-        }
-
-        Vector2 CompensateVerticalAxis(RaycastHit2D hit, Vector2 position)
-        {
-            float bounds_min_y = position.y - (controller.BoxCollider.size.y / 2);
-            float bounds_max_y = position.y + (controller.BoxCollider.size.y / 2);
-            float difference = 0.0f;
-
-            if (hit.normal == Vector2.up)
-                difference = bounds_min_y - hit.point.y;
-            else if (hit.normal == Vector2.down)
-                difference = bounds_max_y - hit.point.y;
-
-            difference = Mathf.Abs(difference);
-            position += hit.normal * difference;
-
             return position;
         }
 
-        Vector2 CompensateHorizontalAxis(RaycastHit2D hit, Vector2 position)
+        bool IsSideColliding(Vector2 side)
         {
-            float bounds_max_x = position.x + (controller.BoxCollider.size.x / 2);
-            float bounds_min_x = position.x - (controller.BoxCollider.size.x / 2);
-            float difference = 0.0f;
+            // TODO: Check is Vector 2 side is normalized.
 
+            // The normal is the opposite force to the movement direction.
+            side *= -1.0f;
+            foreach (var col in AllCollisions)
+            {
+                if (col.normal == side)
+                {
+                    return true;
+                }
+            }
 
-            if (hit.normal == Vector2.left)
-                difference = bounds_max_x - hit.point.x;
-            else if (hit.normal == Vector2.right)
-                difference = bounds_min_x - hit.point.x;
+            return false;
+        }
 
-            difference = Mathf.Abs(difference);
-            position += hit.normal * difference;
+        Vector2 MovePositionToCompensateCollision(Vector2 playerPosition)
+        {
+            float boundsMinY = playerPosition.y - (_controller.BoxCollider.size.y / 2);
+            float boundsMaxY = playerPosition.y + (_controller.BoxCollider.size.y / 2);
+            float boundsMaxX = playerPosition.x + (_controller.BoxCollider.size.x / 2);
+            float boundsMinX = playerPosition.x - (_controller.BoxCollider.size.x / 2);
+            float difference;
 
-            return position;
+            foreach (var col in AllCollisions)
+            {
+                if (col.normal == Vector2.up)
+                {
+                    _controller.Move = Vector2.zero;
+                    difference = boundsMinY - col.point.y;
+                }
+                else if (col.normal == Vector2.down)
+                {
+                    _controller.Move.y = 0.0f;
+                    difference = boundsMaxY - col.point.y;
+                }
+                else if (col.normal == Vector2.left)
+                {
+                    _controller.Move.x = 0.0f;
+                    difference = boundsMaxX - col.point.x;
+                }
+                else // Vector2.right
+                {
+                    _controller.Move.x = 0.0f;
+                    difference = boundsMinX - col.point.x;
+                }
+
+                difference = Mathf.Abs(difference);
+                playerPosition += col.normal * difference;
+            }
+
+            return playerPosition;
         }
     }
 }

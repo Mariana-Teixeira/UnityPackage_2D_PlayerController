@@ -5,20 +5,25 @@ namespace marianateixeira.PlatformerController
 
     public class PlayerMovementStates
     {
-        PlayerController controller;
+        PlayerController _controller;
         public enum State { IDLE, RUN, JUMP, FALL, NULL };
         public State currentState { get; private set; }
 
         public PlayerMovementStates(PlayerController controller)
         {
-            this.controller = controller;
+            this._controller = controller;
             currentState = State.IDLE;
         }
 
-        public void UpdateMachine()
+        public void MachineUpdate()
         {
-            if (CheckingStateConditions() != State.NULL) ChangeState(CheckingStateConditions());
             TickState();
+
+            var newState = CheckingStateConditions();
+            if (newState != currentState)
+            {
+                ChangeState(newState);
+            }
         }
 
         public State CheckingStateConditions()
@@ -26,30 +31,29 @@ namespace marianateixeira.PlatformerController
             switch (currentState)
             {
                 case State.IDLE:
-                    if (!controller.Collisions.IsBottomColliding) return State.FALL;
-                    else if (controller.JumpInput && controller.Data.ReadyToJump) return State.JUMP;
-                    else if (controller.Data.RunSpeed != 0) return State.RUN;
+                    if (!_controller.Collisions.IsGrounded) return State.FALL;
+                    else if (_controller.JumpInput && _controller.Data.ReadyToJump) return State.JUMP;
+                    else if (_controller.Data.RunSpeed != 0) return State.RUN;
                     break;
 
                 case State.RUN:
-                    if (!controller.Collisions.IsBottomColliding) return State.FALL;
-                    else if (controller.JumpInput && controller.Data.ReadyToJump) return State.JUMP;
-                    else if (controller.Data.RunSpeed == 0 && controller.RunInput == 0) return State.IDLE;
+                    if (!_controller.Collisions.IsGrounded) return State.FALL;
+                    else if (_controller.JumpInput && _controller.Data.ReadyToJump) return State.JUMP;
+                    else if (_controller.Data.RunSpeed == 0 && _controller.RunInput == 0) return State.IDLE;
                     break;
 
                 case State.JUMP:
-                    if (controller.Move.y < 0 || controller.Collisions.IsTopColliding) return State.FALL;
-                    else if (controller.Data.VariableJump && !controller.JumpInput) return State.FALL;
-                    else if (controller.Collisions.IsBottomColliding) return State.IDLE;
+                    if (_controller.IsGoingDown || _controller.Collisions.IsTopColliding) return State.FALL;
+                    else if (_controller.Data.VariableJump && !_controller.JumpInput) return State.FALL;
                     break;
 
                 case State.FALL:
-                    if (controller.Collisions.IsBottomColliding && controller.Move.x != 0) return State.RUN;
-                    else if (controller.Collisions.IsBottomColliding) return State.IDLE;
+                    if (_controller.Collisions.IsGrounded && _controller.Move.x != 0) return State.RUN;
+                    else if (_controller.Collisions.IsBottomColliding) return State.IDLE;
                     break;
             }
 
-            return State.NULL;
+            return currentState;
         }
 
         public void ChangeState(State state)
@@ -62,21 +66,11 @@ namespace marianateixeira.PlatformerController
         {
             switch (currentState)
             {
-                case State.IDLE:
-                    controller.Move = Vector2.zero;
-                    break;
-
-                case State.RUN:
-                    controller.Move.y = 0.0f;
-                    break;
-
                 case State.JUMP:
-                    controller.Data.ReadyToJump = false;
-                    controller.Move.y = controller.Data.InitialJumpVelocity;
+                    _controller.Data.ReadyToJump = false;
+                    _controller.Move.y = _controller.Data.InitialJumpVelocity;
                     break;
-
                 case State.FALL:
-                    controller.Move.y = 0.0f;
                     break;
             }
         }
@@ -86,25 +80,25 @@ namespace marianateixeira.PlatformerController
             switch (currentState)
             {
                 case State.IDLE:
-                    if (!controller.JumpInput) controller.Data.ReadyToJump = true;
+                    if (!_controller.JumpInput) _controller.Data.ReadyToJump = true;
                     break;
 
                 case State.RUN:
-                    if (!controller.JumpInput) controller.Data.ReadyToJump = true;
-                    controller.Move.x = controller.Data.AccelerationDirection * controller.Data.RunSpeed;
+                    if (!_controller.JumpInput) _controller.Data.ReadyToJump = true;
+                    _controller.Move.x = _controller.Data.AccelerationDirection * _controller.Data.RunSpeed;
                     break;
 
                 case State.JUMP:
-                    controller.Move.x = controller.Data.AccelerationDirection * controller.Data.RunSpeed;
-                    controller.Move.y += controller.Data.JumpGravity * Time.fixedDeltaTime;
+                    _controller.Move.x = _controller.Data.AccelerationDirection * _controller.Data.RunSpeed;
+                    _controller.Move.y += _controller.Data.JumpGravity * Time.deltaTime;
                     break;
 
                 case State.FALL:
-                    controller.Move.x = controller.Data.AccelerationDirection * controller.Data.RunSpeed;
-                    controller.Move.y += controller.Data.FallGravity * Time.fixedDeltaTime;
+                    if (!_controller.JumpInput) _controller.Data.ReadyToJump = true;
+                    _controller.Move.x = _controller.Data.AccelerationDirection * _controller.Data.RunSpeed;
+                    _controller.Move.y += _controller.Data.FallGravity * Time.deltaTime;
                     break;
             }
         }
     }
-
 }

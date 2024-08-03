@@ -33,7 +33,7 @@ namespace marianateixeira.PlatformerController
             data.bindingPath = "Data";
             data.RegisterCallback<SerializedPropertyChangeEvent>(x => playerController.RecalculatePhysics(), TrickleDown.TrickleDown);
 
-            Button saveData = new Button() { text = "Save Data" };
+            Button saveData = new Button() { text = "Runtime: Save Data" };
             saveData.clicked += playerController.SaveData;
 
             root.Add(move);
