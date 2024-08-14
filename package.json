@@ -1,9 +1,9 @@
 {
     "name": "com.marianateixeira.platformercontroller",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "displayName": "2D Player Controller",
-    "description": "This is an example package",
-    "unity": "2021.3",
+    "description": "2D Player Controller which allows changing movement properties during runtime.",
+    "unity": "2022.3",
     "dependencies": {
       "com.unity.inputsystem": "1.7.0"
    },
