@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace marianateixeira.PlatformerController
+namespace PlatformerController
 {
     public class PlayerCollisions
     {

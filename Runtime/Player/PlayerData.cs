@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using UnityEngine;
 
-namespace marianateixeira.PlatformerController
+namespace PlatformerController
 {
     [Serializable]
     public struct PlayerData
@@ -15,6 +15,7 @@ namespace marianateixeira.PlatformerController
         [SerializeField] float jumpHeight;
         [SerializeField] float jumpTime;
         [SerializeField] float fallTime;
+        [SerializeField] float maximumFallSpeed;
         #endregion
 
         #region Getters for Inspector Variables
@@ -67,6 +68,14 @@ namespace marianateixeira.PlatformerController
                 return fallTime;
             }
         }
+
+        public float MaximumFallSpeed
+        {
+            get
+            {
+                return maximumFallSpeed;
+            }
+        }
         #endregion
 
         public float JumpGravity { get; private set; }
@@ -92,7 +101,7 @@ namespace marianateixeira.PlatformerController
             Deceleration = MaxSpeed / DecelerationTime;
         }
 
-        public void UpdateVariables(float maxSpeed, float accelerationTime, float decelerationTime, bool variableJump, float jumpHeight, float jumpTime, float fallTime)
+        public void UpdateVariables(float maxSpeed, float accelerationTime, float decelerationTime, bool variableJump, float jumpHeight, float jumpTime, float fallTime, float maximumFallSpeed)
         {
             this.maxSpeed = maxSpeed;
             this.accelerationTime = accelerationTime;
@@ -101,6 +110,7 @@ namespace marianateixeira.PlatformerController
             this.jumpHeight = jumpHeight;
             this.jumpTime = jumpTime;
             this.fallTime = fallTime;
+            this.maximumFallSpeed = maximumFallSpeed;
         }
 
         public void LoadFile()
@@ -113,7 +123,7 @@ namespace marianateixeira.PlatformerController
                 string json = File.ReadAllText(filePath);
                 SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-                UpdateVariables(data.MaxSpeed, data.AccelerationTime, data.DecelerationTime, data.VariableJump, data.JumpHeight, data.JumpTime, data.FallTime);
+                UpdateVariables(data.MaxSpeed, data.AccelerationTime, data.DecelerationTime, data.VariableJump, data.JumpHeight, data.JumpTime, data.FallTime, data.MaximumFallSpeed);
             }
         }
 
@@ -128,6 +138,7 @@ namespace marianateixeira.PlatformerController
                 JumpHeight = jumpHeight,
                 JumpTime = jumpTime,
                 FallTime = fallTime,
+                MaximumFallSpeed = maximumFallSpeed,
             };
 
             string json = JsonUtility.ToJson(data);
@@ -144,6 +155,7 @@ namespace marianateixeira.PlatformerController
             public float JumpHeight;
             public float JumpTime;
             public float FallTime;
+            public float MaximumFallSpeed;
         }
     }
 }

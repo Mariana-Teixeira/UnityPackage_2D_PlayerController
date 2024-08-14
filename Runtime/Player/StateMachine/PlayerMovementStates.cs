@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace marianateixeira.PlatformerController
+namespace PlatformerController
 {
 
     public class PlayerMovementStates
@@ -96,7 +96,8 @@ namespace marianateixeira.PlatformerController
                 case State.FALL:
                     if (!_controller.JumpInput) _controller.Data.ReadyToJump = true;
                     _controller.Move.x = _controller.Data.AccelerationDirection * _controller.Data.RunSpeed;
-                    _controller.Move.y += _controller.Data.FallGravity * Time.deltaTime;
+                    if (_controller.Move.y > _controller.Data.MaximumFallSpeed * -1.0f) _controller.Move.y += _controller.Data.FallGravity * Time.deltaTime;
+                    else _controller.Move.y = _controller.Data.MaximumFallSpeed * -1.0f;
                     break;
             }
         }

@@ -1,10 +1,7 @@
-using Codice.CM.Client.Differences;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 
-namespace marianateixeira.PlatformerController
+namespace PlatformerController
 {
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(BoxCollider2D))]
@@ -96,18 +93,13 @@ namespace marianateixeira.PlatformerController
             else if (context.canceled) RunInput = 0;
         }
 
-        Vector2 newPosition = Vector2.zero;
-        Vector2 endPosition = Vector2.zero;
         private void Update()
         {
             _accelerationStateMachine.UpdateMachine();
             _movementStateMachine.MachineUpdate();
 
-            var oldPosition = newPosition;
-            newPosition = Body.position + Move * Time.deltaTime;
-
-            endPosition = _collisions.UpdateCollisions(newPosition);
-            MovePlayer(endPosition);
+            var position = _collisions.UpdateCollisions(Body.position + Move * Time.deltaTime);
+            MovePlayer(position);
         }
 
         void MovePlayer(Vector2 position)

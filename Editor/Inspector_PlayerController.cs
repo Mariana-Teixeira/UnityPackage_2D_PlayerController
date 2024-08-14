@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
-namespace marianateixeira.PlatformerController
+namespace PlatformerController
 {
     [CustomEditor(typeof(PlayerController))]
     public class Inspector_PlayerController : Editor
@@ -33,7 +33,7 @@ namespace marianateixeira.PlatformerController
             data.bindingPath = "Data";
             data.RegisterCallback<SerializedPropertyChangeEvent>(x => playerController.RecalculatePhysics(), TrickleDown.TrickleDown);
 
-            Button saveData = new Button() { text = "Runtime: Save Data" };
+            Button saveData = new Button() { text = "Save Data" };
             saveData.clicked += playerController.SaveData;
 
             root.Add(move);

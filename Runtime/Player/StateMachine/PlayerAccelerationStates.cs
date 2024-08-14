@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace marianateixeira.PlatformerController
+namespace PlatformerController
 {
     public class PlayerAccelerationStates
     {
